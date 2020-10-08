@@ -1,0 +1,1 @@
+select marc_any_match('351c','(Hauptabteilung|Abteilung|Bestand|Teilbestand|Serie|Teilserie)')

@@ -1,0 +1,2 @@
+select marc_any_match('852[ , ]b','(A117)')
+select marc_any_match('990f','bernoulli')
