@@ -1,0 +1,6 @@
+*.seq
+*.seq*
+*.xml
+*.csv
+*.txt
+nohup.out
