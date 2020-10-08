@@ -796,14 +796,15 @@ NEWLINE: while (<$in>) {
                 $line = $sysnumber . ' 8524  L $$b' . $f852b . '$$c' . $f852c . '$$n' .  $f852n . '$$j' .  $f852p . '$$z' . $f852q . '$$x' . $f852x . '$$z' . $f852a_old . $f852b_old . '$$y12';
             }
         }
+
         $line =~ s/\$\$z\$\$/\$\$/g;
         $line =~ s/\$\$x\$\$/\$\$/g;
         $line =~ s/\$\$z$//g;
         
-        if ( $f852q =~ /(Zugang|Benutzung) eingeschränkt/ ) {
-            $line =~ s/\$\$y12/\$\$y67/g;
-            $line =~ s/\$\$y68/\$\$y67/g;
-        }
+        #if ( $f852q =~ /(Zugang|Benutzung) eingeschränkt/ ) {
+        #    $line =~ s/\$\$y12/\$\$y67/g;
+        #    $line =~ s/\$\$y68/\$\$y67/g;
+        #}
     }
     
     # Feld 909 in 900 verschieben und mit Präfix ergänzen
