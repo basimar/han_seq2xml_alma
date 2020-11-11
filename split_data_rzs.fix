@@ -1,1 +1,1 @@
-select marc_any_match('852[ , ]b','LUZHB')
+select marc_any_match('852[4, ]b','LUZHB')

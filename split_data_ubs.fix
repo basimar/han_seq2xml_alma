@@ -1,1 +1,1 @@
-select marc_any_match('852[ , ]b','(A100|A125|A380|A381|A382|AKB|SGARK|SGKBV|SGSTI)')
+select marc_any_match('852[4, ]b','(A100|A125|A380|A381|A382|AKB|SGARK|SGKBV|SGSTI)')

@@ -127,6 +127,9 @@ NEWLINE: while (<$in>) {
             substr($content,29,1) = '|' if substr($content,29,1) =~ /-/;
             substr($content,34,1) = '|' if substr($content,34,1) =~ /-/;
         } elsif ($fmt eq 'VM') {
+            substr($content,18,1) = '|' if substr($content,18,1) =~ /-/;
+            substr($content,19,1) = '|' if substr($content,19,1) =~ /-/;
+            substr($content,20,1) = '|' if substr($content,20,1) =~ /-/;
             substr($content,33,1) = '|' if substr($content,33,1) =~ /-/;
             substr($content,34,1) = '|' if substr($content,34,1) =~ /-/;
         }
@@ -316,6 +319,33 @@ NEWLINE: while (<$in>) {
 #                $line =~ s/\$\$g /\$\$g/g;
 #            }
 #        }
+    }
+    
+    # Feld 880 - 505: HAN-Unterfelder in $a überführen, Indikatoren 1 und 2 setzen
+    if ($field =~ /880/) {
+
+        my $f8806;
+        
+        foreach (@subfields) {
+            if (substr($_,0,1) eq '6')  {
+                $f8806 =  substr($_,1);
+            }
+        }
+
+        if ( $f8806 =~ /^505/ ) {
+        
+            if ($content =~ /\$\$a/ ) {
+                $content =~ s/\$\$6505/\$\$6520/g;
+                $line = $sysnumber . ' 880   L ' .  $content;
+            } else {       
+                $content =~ s/\$\$6505/\$\$6596/g;
+                if ( $ind1 eq '2' ) {
+                    $line = $sysnumber . ' 88031 L ' .  $content;
+                } else {
+                    $line = $sysnumber . ' 88030 L ' .  $content;
+                }
+            }
+        }
     }
     
     # Feld 510: Unterfeld $i in $a integrieren, Indikator 1 setzen
@@ -629,10 +659,9 @@ NEWLINE: while (<$in>) {
             }
         }
 
-        
-            
-        
         if ($ind1 eq 'A') {
+
+            next NEWLINE;
             
             #if ($f852p) { 
             #    if ( $f852a =~ /Basel UB Wirtschaft - SWA/ ) {
@@ -644,13 +673,13 @@ NEWLINE: while (<$in>) {
             #    print $out $temp_sig_a . "\n";
             #}
  
-            $f852a = "Standort: " . $f852a if $f852a;
-            $f852b = ", " . $f852b if $f852b;
-            $f852p = ". Signatur: " . $f852p if $f852p;
-            $f852q = ". Zugang: " . $f852q if $f852q;
-            $f852z = " Hinweis: " . $f852z if $f852z;
+            #$f852a = "Standort: " . $f852a if $f852a;
+            #$f852b = ", " . $f852b if $f852b;
+            #$f852p = ". Signatur: " . $f852p if $f852p;
+            #$f852q = ". Zugang: " . $f852q if $f852q;
+            #$f852z = " Hinweis: " . $f852z if $f852z;
 
-            $line = $sysnumber . ' 5611  L $$aAlternative Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z;
+            #$line = $sysnumber . ' 5611  L $$aAlternative Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z;
             #my $line690_sig_a = $sysnumber . ' 690   L $$aAlternative Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A5';
             #print $out $line690_sig_a . "\n";
 
@@ -663,7 +692,7 @@ NEWLINE: while (<$in>) {
             $f852z = " Hinweis: " . $f852z if $f852z;
 
             #$line = $sysnumber . ' 5611  L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z;
-            my $line = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A6';
+            $line = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A6';
             #my $line690_sig_e = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A6';
             #print $out $line690_sig_e . "\n";
 
@@ -680,9 +709,9 @@ NEWLINE: while (<$in>) {
                 } elsif ( $f852b =~ /Magazin/ ) {
                     $f852c = 'MAG'
                 } elsif ( $f852b =~ /Porträtsammlung/ ) {
-                    $f852c = '102KS'
+                    $f852c = '100KS'
                 } elsif ( $f852b =~ /Kartensammlung/ ) {
-                    $f852c = '102KS'
+                    $f852c = '100KS'
                 } 
                 $f852b = 'A100';
                 $line = $sysnumber . ' 8524  L $$b' . $f852b . '$$c' . $f852c . '$$n' .  $f852n . '$$jUBH ' .  $f852p . '$$z' . $f852q . '$$x' . $f852x . '$$z' . $f852z . '$$y12';
@@ -806,6 +835,11 @@ NEWLINE: while (<$in>) {
         #    $line =~ s/\$\$y68/\$\$y67/g;
         #}
     }
+
+    # Indikator 1 in Feld 856 auf 4 setzen (damit Link in Primo VE angezeigt wird) 
+    if ($field =~ /856/) {
+        $line = $sysnumber . ' 8564' . $ind2 . ' L ' . $content;
+    }
     
     # Feld 909 in 900 verschieben und mit Präfix ergänzen
     if ($field =~ /909/) {
@@ -824,9 +858,9 @@ NEWLINE: while (<$in>) {
 close $out or warn "$0: close $tempfile $!";
 
 my $importer = Catmandu::Importer::MARC::ALEPHSEQ->new(file => $tempfile);
-#my $exporter = Catmandu::Exporter::MARC::ALEPHSEQ->new(file => $outputfile);
+my $exporter = Catmandu::Exporter::MARC::ALEPHSEQ->new(file => $outputfile);
 #my $exporter = Catmandu::Exporter::MARC::XML->new(file => $outputfile);
-my $exporter = Catmandu::Exporter::MARC::XML->new(file => $outputfile, pretty => 1);
+#my $exporter = Catmandu::Exporter::MARC::XML->new(file => $outputfile, pretty => 1);
 
 $importer->each(sub {
     my $data = $_[0];
@@ -916,8 +950,8 @@ $importer->each(sub {
             $data = marc_add($data,'338','a','Blatt','b','nb','2','rdacarrier');
         }
     } elsif ($ldrpos6 =~ /p/ ) {
+        $data = marc_add($data,'336','a','Sonstige','b','xxx','2','rdacontent');
         unless ($data->{f906} || $data->{f907}) {
-            $data = marc_add($data,'336','a','Sonstige','b','xxx','2','rdacontent');
             $data = marc_add($data,'337','a','ohne Hilfsmittel zu benutzen','b','n','2','rdamedia');
             $data = marc_add($data,'338','a','Sonstige','b','nz','2','rdacarrier');
         }
@@ -1091,7 +1125,7 @@ $importer->each(sub {
 
     if ($data->{f906} =~ /VM Andere Art = Autre forme/ || $data->{f907} =~ /VM Andere Art = Autre forme/ ) {
         $data = marc_add($data,'337','a','ohne Hilfsmittel zu benutzen','b','n','2','rdamedia');
-        $data = marc_add($data,'338','a','Blatt','b','nz','2','rdacarrier');
+        $data = marc_add($data,'338','a','Blatt','b','nb','2','rdacarrier');
     } 
 
     if ($data->{f906} =~ /VM Postkarte/ || $data->{f907} =~ /VM Postkarte/ ) {

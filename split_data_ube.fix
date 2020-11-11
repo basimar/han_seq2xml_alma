@@ -1,1 +1,1 @@
-select marc_any_match('852[ , ]b','(B400|B404|B415|B583)')
+select marc_any_match('852[4, ]b','(B400|B404|B415|B583)')
