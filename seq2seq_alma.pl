@@ -137,7 +137,7 @@ NEWLINE: while (<$in>) {
         $content =~ s/-/ /g;
 
         $line = $sysnumber . ' 008   L ' . $content;
-        print $sysnumber . ' ' . $fmt . ' ' . $content . "\n";
+        #print $sysnumber . ' ' . $fmt . ' ' . $content . "\n";
     }
     
     # Feld 019: Verbundcode an den Anfang von Unterfeld $5 hinzufügen
@@ -164,13 +164,15 @@ NEWLINE: while (<$in>) {
         $line =~ s/\$\$9.+?(?=(\$\$|$))//g; 
     }
     
-    # Beziehungskennzeichnung nur als Code migrieren (in TL3 ausgeschaltet, stattdessen $$eAutor durch $$eVerfasser ersetzen)
+    # Beziehungskennzeichnung nur als Code migrieren (in TL3 ausgeschaltet, stattdessen $$eAutor durch $$eVerfasser ersetzen, inkl. Zweifelhafter Autor)
     if ($field =~ /(100|110|700|710)/) {
         #$line =~ s/\$\$e.+?(?=(\$\$|$))//g; 
         $line =~ s/\$\$eAutor/\$\$eVerfasser/g; 
+        $line =~ s/\$\$eZweifelhafter Autor/\$\$eZweifelhafter Verfasser/g; 
     } elsif ($field =~ /(111|711)/ ) {
         #$line =~ s/\$\$j.+?(?=(\$\$|$))//g; 
         $line =~ s/\$\$jAutor/\$\$jVerfasser/g; 
+        $line =~ s/\$\$jZweifelhafter Autor/\$\$jZweifelhafter Verfasser/g; 
     }
     
 
@@ -692,7 +694,7 @@ NEWLINE: while (<$in>) {
             $f852z = " Hinweis: " . $f852z if $f852z;
 
             #$line = $sysnumber . ' 5611  L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z;
-            $line = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A6';
+            $line = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A5';
             #my $line690_sig_e = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A6';
             #print $out $line690_sig_e . "\n";
 
@@ -1012,7 +1014,7 @@ $importer->each(sub {
         $data = marc_add($data,'338','a','Magnetbandkassette','b','cf','2','rdacarrier');
     } 
     
-    if ($data->{f906} =~ /CF Magnetband/ || $data->{f907} =~ /CF Magnetband/ ) {
+    if ($data->{f906} =~ /CF Magnetband / || $data->{f907} =~ /CF Magnetband/ ) {
         $data = marc_add($data,'337','a','Computermedien','b','c','2','rdamedia');
         $data = marc_add($data,'338','a','Magnetbandspule','b','ch','2','rdacarrier');
     }
