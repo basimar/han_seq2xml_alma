@@ -1,0 +1,6 @@
+reject marc_any_match('852[4, ]b','A117')
+reject marc_any_match('852[4, ]b','B445')
+reject marc_any_match('852[4, ]b','LUZHB')
+reject marc_any_match('852[4, ]b','(B400|B404|B415|B583)')
+reject marc_any_match('852[4, ]b','(A100|A125|A380|A381|A382|AKB|SGARK|SGKBV|SGSTI)')
+reject marc_any_match('852[4, ]b','A150')

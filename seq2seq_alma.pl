@@ -570,7 +570,7 @@ NEWLINE: while (<$in>) {
             $line_music_382 =~ s/ \(([0-9])\)$/\$\$n$1/g;
             $line_music_382 =~ s/ \(([0-9]{2})\)$/\$\$n$1/g;
             $line_music_382 =~ s/, /\$\$n1\$\$a/g;
-            $line_music_382 =~ s/$/\$\$n1/g unless length($line_music_382) == 18;;
+            $line_music_382 =~ s/$/\$\$n1/g unless ($line_music_382 =~ /[0-9]$/ || $line_music_382 =~ /[0-9]{2}$/ || length($line_music_382) == 18);
             $line_music_382 =~ s/ \(mehrere\)\$\$n1/\$\$nmehrere/g;
     
             print $out $line_music_382 . '$$2idsmusi' . "\n" unless length($line_music_382) == 18;
@@ -689,12 +689,12 @@ NEWLINE: while (<$in>) {
             
             $f852a = "Standort: " . $f852a if $f852a;
             $f852b = ", " . $f852b if $f852b;
-            $f852p = ". Signatur: " . $f852p if $f852p;
+            my $f852j = ". Signatur: " . $f852p if $f852p;
             $f852q = ". Zugang: " . $f852q if $f852q;
             $f852z = " Hinweis: " . $f852z if $f852z;
 
             #$line = $sysnumber . ' 5611  L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z;
-            $line = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A5';
+            $line = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852j . $f852q . $f852z . '$$e' . $f852p .  '$$2HAN-A5';
             #my $line690_sig_e = $sysnumber . ' 690   L $$aEhemalige Signatur: ' . $f852a . $f852b . $f852p . $f852q . $f852z . '$$2HAN-A6';
             #print $out $line690_sig_e . "\n";
 
@@ -1014,7 +1014,7 @@ $importer->each(sub {
         $data = marc_add($data,'338','a','Magnetbandkassette','b','cf','2','rdacarrier');
     } 
     
-    if ($data->{f906} =~ /CF Magnetband / || $data->{f907} =~ /CF Magnetband/ ) {
+    if ($data->{f906} =~ /CF Magnetband / || $data->{f907} =~ /CF Magnetband / ) {
         $data = marc_add($data,'337','a','Computermedien','b','c','2','rdamedia');
         $data = marc_add($data,'338','a','Magnetbandspule','b','ch','2','rdacarrier');
     }
@@ -1155,6 +1155,11 @@ $importer->each(sub {
     if ($data->{f906} =~ /MF Mikrofiche/ || $data->{f907} =~ /MF Mikrofiche/ ) {
         $data = marc_add($data,'337','a','Mikroform','b','h','2','rdamedia');
         $data = marc_add($data,'338','a','Mikrofiche','b','he','2','rdacarrier');
+    }
+    
+    if ($data->{f906} =~ /MF Andere Mikro/ || $data->{f907} =~ /MF Andere Mikro/ ) {
+        $data = marc_add($data,'337','a','Mikroform','b','h','2','rdamedia');
+        $data = marc_add($data,'338','a','Sonstige','b','hz','2','rdacarrier');
     }
     
     #Felder 906/907 löschen 
